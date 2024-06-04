@@ -1,0 +1,34 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<style>
+    .home-container{
+        display: grid;
+        grid-template-columns: 4fr 3fr;
+        margin-top: 10%;
+    }
+    .text {
+        text-transform: uppercase;
+        font-family: Helvetica;
+    }
+    .img {
+        width: 100%; 
+        height: 100%;
+        image-rendering:auto
+    }
+</style>
+
+<div class="home-container">
+    <div>
+        <img class="img" src="{{shoe.image}}" >
+    </div>
+    <div class="text">
+        <h1>{{shoe.name}}</h1>
+        <h2>Ár: {{shoe.price}} Ft</h2>
+        <a href="{{shoe.link}}" class="no-link-style" style="color: rgb(0,106,78);"><h2>{{shoe.cég}}</h2></a>
+    </div>
+
+</div>
+
+{% endblock %}

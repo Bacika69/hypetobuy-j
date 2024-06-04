@@ -1,0 +1,181 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<style>
+    .home-container{
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(4, 1fr);
+        margin-top: 2%;
+        gap: 1px;
+    }
+    .shoe_img {
+        width: 300px;
+        height: 165px;
+        margin-bottom: 10px;
+        object-fit: cover;
+    }
+    .mirror {
+        transform: scaleX(-1);
+        width: 300px;
+        height: 165px;
+        margin-bottom: 10px;
+        object-fit: cover;
+    }
+    .text_style {
+        color: black;
+        overflow: hidden;
+        font-family: Arial;
+    }
+    .shoe_info {
+        margin-top: 10px;
+        margin-left: 10px;
+        width: 300px;
+        height: 320px;
+        padding: 20px;
+        margin-right: 10px;
+        border: 1px solid transparent;
+        transition: border-color 0.1s;
+    }
+    .shoe_info:hover {
+        border-color: black;
+    
+    }
+    .sizeer {
+        transform: scaleX(-1);
+        background-color: transparent;
+        opacity: 50%;
+        width: 300px;
+        margin-top: -125px;
+        opacity: 1;
+        overflow: hidden;
+        object-fit: cover;
+        clip-path: inset(130px 0 0 0);
+    }
+    .overlay-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        display: none; 
+    }
+    #rendezes {
+            transition: ease;
+            position: absolute;
+            left:78%;
+            top: 24%;
+            bottom: auto;
+            height: auto;
+            width: 15%;
+            z-index: 800;
+            background-color: white;
+            padding: 20px;
+            display: none;
+            border: 1px solid #ddd;
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+
+            border-radius: 30px;
+    }
+    .rendezesstilo {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        margin-left: 80%;
+        margin-top: 8%;
+        margin-right: 10%;
+        gap: 2px;
+    }
+    .kör {
+        border-radius: 100%;
+        border-color: black;
+        border-width: 1px;
+        background-color: white;
+        height: 25px;
+        width: 25px;
+        display: grid;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        transition: background-color 0.3s;
+    }
+    .h2 {
+        font-family: helvetica;
+        cursor: pointer;
+        text-decoration: none;
+        transition: text-decoration 0.3s;
+        color: black;
+    }
+    .rendezesstilo:hover .kör{
+        background-color: rgb(177, 176, 176);
+    }
+    .rendezesstilo:hover .h2{
+        text-decoration: underline;
+    }
+    
+    .h2:hover {
+        text-decoration: underline;
+    }
+    
+</style>
+<div class="rendezesstilo" >
+    <h2 class="h2" onclick="openrendezes()">Rendezes</h2>
+    <button class="kör" onclick="openrendezes()">
+        <svg width="15" height="15" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </button>
+</div>
+<div id="rendezes">
+    <div>
+        <a method="GET" href="{% url 'sneakerek' %}?q={{ request.GET.q }}&r=legalacsonyabb" class="h2"><h3  style="color: black;">Legalacsonyabb ár</h3></a>
+    </div>
+    <div>
+        <a method="GET" href="{% url 'sneakerek' %}?q={{ request.GET.q }}&r=legmagasabb" class="h2"><h3  style="color: black;">Legmagasabb ár</h2></a>
+    </div>
+    <div>
+        <a method="GET" href="{% url 'sneakerek' %}?q={{ request.GET.q }}&r=random" class="h2"><h3 style="color: black;">Random</h3></a>
+    </div>
+</div>
+<div class="home-container">
+    {% for cipő in shoes %}
+    <div class="shoe_info">
+        {% if shoes|length > 10 %}
+        <a class="no-link-style" href="{% url 'home' %}?q={{cipő.name}}">
+        {% else %}
+        
+        <a class="no-link-style" href="{% url 'room' cipő.id %}">
+        {% endif %}
+        
+            {% if cipő.cég == 'Foot Locker' %}
+                <img class="mirror" src="{{ cipő.image }}">
+            {% elif cipő.cég == 'sizeer' %}
+                <img class="sizeer" src="{{cipő.image}}">
+            {% else %}
+                <img class="shoe_img" src="{{ cipő.image }}">
+            {% endif %}
+            <div class="text_style">
+                <h3>{{ cipő.name }}</h3>
+                <h3 style="color: gray;">{{ cipő.price }} Ft-tól</h3>
+                <h3>{{ cipő.cég }}</h3>
+
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    function openrendezes() {
+        var searchBar = document.getElementById("rendezes");
+        if (rendezes.style.display === "block") {
+            rendezes.style.display = "none";
+        } else {
+            rendezes.style.display = "block";
+        }
+    }
+</script>
+{% endblock %}

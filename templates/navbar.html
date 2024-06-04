@@ -1,0 +1,221 @@
+{% load static %}
+<style>
+    
+    .márka-container{
+        display: table-row;
+        grid-template-columns: repeat(4, auto);
+        margin-left: 1%;
+        gap: 5%;
+    }
+    .nav-container {
+        position: fixed;
+        background-color: rgb(0,106,78);
+        display: grid;
+        grid-template-columns: auto auto auto;
+        align-items: center;
+        height: max-content;
+        width: 100%;
+        top: 0;
+        left: 0;
+        /* border-radius: 30px;  */
+        z-index: 900;
+    }
+
+    .nav-container form input[type="text"] {
+        width: 100%; 
+        padding: 10px; 
+        font-size: 16px; 
+    }
+
+    .no-link-style {
+        text-decoration: none;
+        color: white;  
+        font-family: helvetica;
+        transition: text-decoration;
+    }
+    .no-link-style:hover {
+        text-decoration: underline white;
+    }
+    .menu {
+            display: flex;
+            justify-content: center;
+            margin-left: 25%;
+            color: #fff;
+            padding: 10px;
+            font-family: helvetica;
+             
+    }
+    .menu-item {
+            cursor: pointer;
+    }
+    .x_design {
+        border-radius: 100%;
+        border-color: black;
+        background-color: white;
+        height: 50px;
+        width: 50px;
+        display: grid;
+        justify-content: center;
+        align-items: center;
+        z-index: 1001;
+        overflow: hidden;
+        transition: border-color 0.3s;
+    }
+    .X {
+        color: rgb(0,106,78);
+        transition: color 0.3s;
+        size: 50px;
+        
+    }
+    .x_design:hover  .X {
+        border-color: black;
+        color: rgb(1, 32, 24);
+    }
+    
+    
+    .overlay-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        display: none; 
+    }
+
+    #overlay-content {
+            transition: ease;
+            position: fixed;
+            display: grid;
+            grid-template-columns: 15fr 1fr;
+            left:70%;
+            top: 15%;
+            bottom: 50%;
+            height: 30%;
+            width: 20%;
+            z-index: 1000;
+            background-color: rgb(0,106,78);
+            padding: 20px;
+
+            border-radius: 30px;
+            font-family: helvetica;
+        }
+    #search {
+            position: fixed;
+            z-index: 1000;
+            margin-left: 10%;
+        }
+    .overlayfilter {
+            transition: ease;
+            position: fixed;
+            grid-template-columns: 15fr 1fr;
+            left:70%;
+            top: 15%;
+            bottom: auto;
+            height: auto;
+            width: 20%;
+            z-index: 1000;
+            background-color: rgb(0,106,78);
+            padding: 20px;
+            display: none;
+
+            border-radius: 30px;
+    }
+</style>
+
+<div class="nav-container">
+    <div style="margin-left: 10%;" onclick="openSearch()" >
+        <svg role="presentation" stroke-width="2" focusable="false" width="50" height="50" class="icon icon-search" viewBox="0 0 22 22">
+            <circle cx="11" cy="10" r="7" fill="none" stroke="white"></circle>
+            <path d="m16 15 3 3" stroke="white" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg> 
+        
+    </div>
+    <div id="search" style="display: none;" >
+        <form method="GET" action="{% url 'sneakerek' %}">
+            <input id="search-input" type="text" name="q" placeholder="Keresés" style="width:100%; height: 100%; border-radius: 20px;">
+        </form>
+    </div>
+    <div style="align-items: center; justify-content: center;">
+        <a class="no-link-style" href="/">
+            <h1 style=" color: white; margin-left: 40%;">HypeToBuy </h1>
+        </a>   
+    </div>
+    <div>
+        <div class="menu">
+            <div class="menu-item" onclick="openOverlay()"><h2 class="no-link-style" style="color: white;">SNEAKEREK</h2></div>
+        </div>
+    </div>
+</div>
+
+<div id="overlay-background" class="overlay-background"></div>
+<div id="overlay" style="display: none;">
+    <div id="overlay-content">
+            <div class="márka-container">
+                {% for csoport, cipők in best_shoes.items %}
+                    <div onclick="openOverlayfilter('{{ csoport }}')" style="cursor: pointer;">
+                        <a class="no-link-style"><h2 style="color:white">{{ csoport }}</h2></a>
+                    </div>
+                    <div id="overlayfilter-{{ csoport }}" class="overlayfilter">
+                        <div class="márka-container">
+                            <div>
+                                <div>
+                                    <a method="GET" class="no-link-style" href="{% url 'sneakerek' %}?q={{ csoport }}"><h2 style="color:white">{{ csoport }}</h2></a>
+                                </div>
+                                {% for cipő in cipők %}
+                                <div>
+                                    <a method="GET" class="no-link-style" href="{% url 'sneakerek' %}?q={{ cipő }}"><h2 style="color: rgb(246, 232, 208)">{{ cipő }}</h2></a>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div>
+                            <button class="x_design" onclick="closeOverlayfilter('{{ csoport }}')">
+                                <svg class="X" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="15" y1="6" x2="9" y2="12"></line>
+                                    <line x1="9" y1="12" x2="15" y2="18"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div>
+                <button class="x_design" onclick="closeOverlay()">
+                        <svg class="X" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                </button>
+            </div>
+    </div>
+</div>
+<script>
+    function openOverlay() {
+        document.getElementById("overlay-background").style.display = "block";
+        document.getElementById("overlay").style.display = "block";
+        
+    }
+    function closeOverlay() {
+        document.getElementById("overlay").style.display = "none";
+        document.getElementById("overlay-background").style.display = "none";
+    }
+    function openSearch() {
+        var searchBar = document.getElementById("search");
+        var searchInput = document.getElementById("search-input");
+        if (search.style.display === "block") {
+            search.style.display = "none";
+        } else {
+            search.style.display = "block";
+            searchInput.focus(); 
+        }
+    }
+    function openOverlayfilter(csoport) {
+        document.getElementById('overlayfilter-' + csoport).style.display = 'grid';
+    }
+
+    function closeOverlayfilter(csoport) {
+        document.getElementById('overlayfilter-' + csoport).style.display = 'none';
+    }
+</script>

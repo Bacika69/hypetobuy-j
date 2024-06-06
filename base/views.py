@@ -507,6 +507,9 @@ def home(request):
     shoes = shoes.exclude(name__icontains="(Infants)")
     shoes = list(shoes)
     random.shuffle(shoes)
+    if len(shoes) > 50:
+        shoes = shoes[:50]
+        print("fasz")
     for cipő in shoes:
         cipő_név = cipő.name.lower()
         if 'dunk' in cipő_név:
@@ -557,6 +560,8 @@ def home(request):
         random.shuffle(cipők)
         length=len(cipők)
         print(cipők)
+    
+    
     best_shoes = {'Nike': ["Air Force 1", "Air Max 1", "Dunk High", "Dunk Low"], 'Air Jordan': ["Air Jordan 1 High", "Air Jordan 1 Mid", "Air Jordan 1 Low", "Air Jordan 3", "Air Jordan 4"],
                     'Adidas': ["Adidas Campus", "Adidas Gazelle", "Adidas Samba"], 'Yeezy': ["Yeezy Boost 350", "Yeezy Slide", "Yeezy Foam"]}
 

@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-khz4j(%5ua!o1&utf+q0kx-38$bro#sq%dppy(9#p3w*^w)b!7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://hypetobuy-horvath-bators-projects.vercel.app/', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['hypetobuy-horvath-bators-projects.vercel.app/', '127.0.0.1', 'localhost']
 
 
 # Application definition

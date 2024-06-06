@@ -69,208 +69,208 @@ def home(request):
                 )
                 szamolas += 1
 
-    base_url = "https://balazskicks.com/collections/sneakerek?page={}"
+    # base_url = "https://balazskicks.com/collections/sneakerek?page={}"
 
-    for a in range(1, 1):
-        url = base_url.format(a)
-        result = requests.get(url).text
-        doc = BeautifulSoup(result, "html.parser")
-        divs = doc.find_all('div', class_='product-card__info')
-        if not divs:
-            break
-        nevek = []
-        fotok = []
-        árak = []
-        linkek = []
-        for cucc in divs:
-            név = cucc.find('span', class_='product-card__title')
-            név = név.a
-            név = név.string
-            ár = cucc.find('span', class_='tlab-currency-format')
-            ár = ár.string
-            ár = ár.split('.')
-            ár = ár[0].replace(",", " ")
-            rendezes = ár.replace(" ", "")
-            árak.append(ár)
-            nevek.append(név)
-        foto_divs = doc.find_all('div', class_='product-card__figure')
-        for kepstuff in foto_divs:
-            a = kepstuff.a
-            img = a.img
-            src = img['src']
-            link = a['href']
-            fotok.append(src)
-            linkek.append(link)
-        cipők = list(zip(nevek, árak, fotok, linkek))
-        for cipő_dolgok in cipők:
-            rendezes = cipő_dolgok[1]
-            rendezes = rendezes.replace(" ", "")
-            jo_link = cipő_dolgok[3]
-            jo_link = f"https://balazskicks.com{jo_link}"
-            Shoe.objects.get_or_create(
-                        name = cipő_dolgok[0],
-                        price = cipő_dolgok[1],
-                        image = cipő_dolgok[2],
-                        rendszerezes = rendezes,
-                        cég = "balázskicks",
-                        link = jo_link,
-                    )
-    márka_sneak = ['nike', 'air-jordan', 'adidas', 'new-balance-1']
-    nevek = []
-    fotok = []
-    linkek = []
-    árak = []
-    for w in márka_sneak:
-        for y in range(1, 1):
-            url = f"https://sneakcenter.com/collections/{w}?page={y}"
-            result = requests.get(url).text
-            doc = BeautifulSoup(result, "html.parser")
-            árak_span = doc.find_all('p', class_='product-item__price')
-            if not árak_span:
-                break
-            for i in árak_span:
-                try:
-                    ár = i.find('span', class_='sale')
-                    ár = ár.span
-                    ár = ár.string
-                except:
-                    ár = i.find('span', class_='money')
-                    ár = ár.string
-                ár = ár.split('.')[0].replace(",", " ")
-                árak.append(ár)
-            név_h4 = doc.find_all('h4', class_='ff-body product-item__product-title fs-product-card-title')
-            for x in név_h4:
-                a = x.a                    
-                név = a.string
-                if "(W)" or "(GS)" in név:
-                    név = név.replace("(W)", "")
-                    név = név.replace("(GS)", "")
-                nevek.append(név)
-            kep_as = doc.find_all('a', class_='product-item__image-link')
-            for kep_div in kep_as:
-                    link = kep_div['href']
-                    link = f"https://sneakcenter.com/{link}"
-                    div = kep_div.div
-                    img = div.img
-                    src = img['src']
-                    fotok.append(src)
-                    linkek.append(link)
+    # for a in range(1, 1):
+    #     url = base_url.format(a)
+    #     result = requests.get(url).text
+    #     doc = BeautifulSoup(result, "html.parser")
+    #     divs = doc.find_all('div', class_='product-card__info')
+    #     if not divs:
+    #         break
+    #     nevek = []
+    #     fotok = []
+    #     árak = []
+    #     linkek = []
+    #     for cucc in divs:
+    #         név = cucc.find('span', class_='product-card__title')
+    #         név = név.a
+    #         név = név.string
+    #         ár = cucc.find('span', class_='tlab-currency-format')
+    #         ár = ár.string
+    #         ár = ár.split('.')
+    #         ár = ár[0].replace(",", " ")
+    #         rendezes = ár.replace(" ", "")
+    #         árak.append(ár)
+    #         nevek.append(név)
+    #     foto_divs = doc.find_all('div', class_='product-card__figure')
+    #     for kepstuff in foto_divs:
+    #         a = kepstuff.a
+    #         img = a.img
+    #         src = img['src']
+    #         link = a['href']
+    #         fotok.append(src)
+    #         linkek.append(link)
+    #     cipők = list(zip(nevek, árak, fotok, linkek))
+    #     for cipő_dolgok in cipők:
+    #         rendezes = cipő_dolgok[1]
+    #         rendezes = rendezes.replace(" ", "")
+    #         jo_link = cipő_dolgok[3]
+    #         jo_link = f"https://balazskicks.com{jo_link}"
+    #         Shoe.objects.get_or_create(
+    #                     name = cipő_dolgok[0],
+    #                     price = cipő_dolgok[1],
+    #                     image = cipő_dolgok[2],
+    #                     rendszerezes = rendezes,
+    #                     cég = "balázskicks",
+    #                     link = jo_link,
+    #                 )
+    # márka_sneak = ['nike', 'air-jordan', 'adidas', 'new-balance-1']
+    # nevek = []
+    # fotok = []
+    # linkek = []
+    # árak = []
+    # for w in márka_sneak:
+    #     for y in range(1, 1):
+    #         url = f"https://sneakcenter.com/collections/{w}?page={y}"
+    #         result = requests.get(url).text
+    #         doc = BeautifulSoup(result, "html.parser")
+    #         árak_span = doc.find_all('p', class_='product-item__price')
+    #         if not árak_span:
+    #             break
+    #         for i in árak_span:
+    #             try:
+    #                 ár = i.find('span', class_='sale')
+    #                 ár = ár.span
+    #                 ár = ár.string
+    #             except:
+    #                 ár = i.find('span', class_='money')
+    #                 ár = ár.string
+    #             ár = ár.split('.')[0].replace(",", " ")
+    #             árak.append(ár)
+    #         név_h4 = doc.find_all('h4', class_='ff-body product-item__product-title fs-product-card-title')
+    #         for x in név_h4:
+    #             a = x.a                    
+    #             név = a.string
+    #             if "(W)" or "(GS)" in név:
+    #                 név = név.replace("(W)", "")
+    #                 név = név.replace("(GS)", "")
+    #             nevek.append(név)
+    #         kep_as = doc.find_all('a', class_='product-item__image-link')
+    #         for kep_div in kep_as:
+    #                 link = kep_div['href']
+    #                 link = f"https://sneakcenter.com/{link}"
+    #                 div = kep_div.div
+    #                 img = div.img
+    #                 src = img['src']
+    #                 fotok.append(src)
+    #                 linkek.append(link)
 
-    cipők = list(zip(nevek, árak, fotok, linkek))  
-    for cipő_dolgok in cipők:
-        rendezes = cipő_dolgok[1].replace(" ", "")
-        Shoe.objects.get_or_create(
-                            name = cipő_dolgok[0],
-                            price = cipő_dolgok[1],
-                            image = cipő_dolgok[2],
-                            rendszerezes = rendezes,
-                            cég = "sneakercenter",
-                            link = cipő_dolgok[3],
-                        )
-    base_url_2 = "https://onsize.eu/collections/sneakerek?page={}"
+    # cipők = list(zip(nevek, árak, fotok, linkek))  
+    # for cipő_dolgok in cipők:
+    #     rendezes = cipő_dolgok[1].replace(" ", "")
+    #     Shoe.objects.get_or_create(
+    #                         name = cipő_dolgok[0],
+    #                         price = cipő_dolgok[1],
+    #                         image = cipő_dolgok[2],
+    #                         rendszerezes = rendezes,
+    #                         cég = "sneakercenter",
+    #                         link = cipő_dolgok[3],
+    #                     )
+    # base_url_2 = "https://onsize.eu/collections/sneakerek?page={}"
 
-    nevek = []
-    árak = []
-    fotók = []
-    fotók_2 = []
-    linkek = []
+    # nevek = []
+    # árak = []
+    # fotók = []
+    # fotók_2 = []
+    # linkek = []
 
-    for i in range(1, 1):
-        url = base_url_2.format(i)
-        result = requests.get(url).text
-        doc = BeautifulSoup(result, "html.parser")
-        divs = doc.find_all('product-card')
-        for product in divs:
-            név = product.find('span', class_='product-card__title')
-            if not név:
-                break
-            név = név.a
-            név = név.string
+    # for i in range(1, 1):
+    #     url = base_url_2.format(i)
+    #     result = requests.get(url).text
+    #     doc = BeautifulSoup(result, "html.parser")
+    #     divs = doc.find_all('product-card')
+    #     for product in divs:
+    #         név = product.find('span', class_='product-card__title')
+    #         if not név:
+    #             break
+    #         név = név.a
+    #         név = név.string
             
-            ár = product.find('sale-price')
-            ár = ár.find_all('span')
-            ár = ár[1]
-            ár = ár.string
-            ár = ár.replace("Ft", "")
-            ár = ár.replace(" ", "")
-            ár = int(ár)
-            ár = '{:,}'.format(ár)
-            ár = ár.replace(",", " ")
-            kép = product.find('div', class_="product-card__figure")
-            kép = kép.a
-            link = kép['href']
-            link = f"https://onsize.eu{link}"
-            imgk = kép.find_all('img')
-            if len(imgk) == 1:
-                    pass
-            else:
-                    kép = imgk[1]
-                    kép_2 = imgk[0]
-                    kép_2 = kép_2['src']
-                    kép = kép['src']
-                    fotók.append(kép)
-                    linkek.append(link)
-                    árak.append(ár)
-                    nevek.append(név)
-                    fotók_2.append(kép_2)
-    cipők = list(zip(nevek, árak, fotók, fotók_2, linkek))
-    for cipő_dolgok in cipők:
-        rendezes = cipő_dolgok[1].replace(" ", "")
-        Shoe.objects.get_or_create(
-                            name = cipő_dolgok[0],
-                            price = cipő_dolgok[1],
-                            image = cipő_dolgok[2],
-                            image_2 = cipő_dolgok[3],
-                            rendszerezes = rendezes,
-                            cég = "OnSize",
-                            link = cipő_dolgok[4],
-                        )
+    #         ár = product.find('sale-price')
+    #         ár = ár.find_all('span')
+    #         ár = ár[1]
+    #         ár = ár.string
+    #         ár = ár.replace("Ft", "")
+    #         ár = ár.replace(" ", "")
+    #         ár = int(ár)
+    #         ár = '{:,}'.format(ár)
+    #         ár = ár.replace(",", " ")
+    #         kép = product.find('div', class_="product-card__figure")
+    #         kép = kép.a
+    #         link = kép['href']
+    #         link = f"https://onsize.eu{link}"
+    #         imgk = kép.find_all('img')
+    #         if len(imgk) == 1:
+    #                 pass
+    #         else:
+    #                 kép = imgk[1]
+    #                 kép_2 = imgk[0]
+    #                 kép_2 = kép_2['src']
+    #                 kép = kép['src']
+    #                 fotók.append(kép)
+    #                 linkek.append(link)
+    #                 árak.append(ár)
+    #                 nevek.append(név)
+    #                 fotók_2.append(kép_2)
+    # cipők = list(zip(nevek, árak, fotók, fotók_2, linkek))
+    # for cipő_dolgok in cipők:
+    #     rendezes = cipő_dolgok[1].replace(" ", "")
+    #     Shoe.objects.get_or_create(
+    #                         name = cipő_dolgok[0],
+    #                         price = cipő_dolgok[1],
+    #                         image = cipő_dolgok[2],
+    #                         image_2 = cipő_dolgok[3],
+    #                         rendszerezes = rendezes,
+    #                         cég = "OnSize",
+    #                         link = cipő_dolgok[4],
+    #                     )
     
-    base_url_3 = "https://www.rdrop.hu/collections/all?page={}"
+    # base_url_3 = "https://www.rdrop.hu/collections/all?page={}"
 
 
-    for i in range(1, 1):
+    # for i in range(1, 1):
         
 
-        url = base_url_3.format(i)
-        result = requests.get(url).text
-        doc = BeautifulSoup(result, "html.parser")
-        lis = doc.find_all('li', class_='grid__item')
-        if not lis:
-            break
-        for q in lis:
-            név = q.find('h3', class_='card__heading h5')
-            név = név.a
-            href = név['href']
-            href = f"https://www.rdrop.hu/{href}"
-            név = név.string
-            név = név.lstrip()
-            if "(ENFANT)" or "(NOIR)" in név:
-                név = név.replace("(ENFANT)", "")
-                név = név.replace("(NOIR)", "")
-            név = név.title()
-            ár = q.find('span', class_="price-item price-item--sale price-item--last")
-            ár = ár.string
-            ár = ár.split('Ft')
-            ár = ár[0]
-            ár = ár.replace('.', ' ')
-            ár = ár.replace(' ', '')
-            ár = int(ár)
-            ár = '{:,}'.format(ár)
-            ár = ár.replace(",", " ")
-            rendezes = ár.replace(" ", "")
+    #     url = base_url_3.format(i)
+    #     result = requests.get(url).text
+    #     doc = BeautifulSoup(result, "html.parser")
+    #     lis = doc.find_all('li', class_='grid__item')
+    #     if not lis:
+    #         break
+    #     for q in lis:
+    #         név = q.find('h3', class_='card__heading h5')
+    #         név = név.a
+    #         href = név['href']
+    #         href = f"https://www.rdrop.hu/{href}"
+    #         név = név.string
+    #         név = név.lstrip()
+    #         if "(ENFANT)" or "(NOIR)" in név:
+    #             név = név.replace("(ENFANT)", "")
+    #             név = név.replace("(NOIR)", "")
+    #         név = név.title()
+    #         ár = q.find('span', class_="price-item price-item--sale price-item--last")
+    #         ár = ár.string
+    #         ár = ár.split('Ft')
+    #         ár = ár[0]
+    #         ár = ár.replace('.', ' ')
+    #         ár = ár.replace(' ', '')
+    #         ár = int(ár)
+    #         ár = '{:,}'.format(ár)
+    #         ár = ár.replace(",", " ")
+    #         rendezes = ár.replace(" ", "")
             
-            kép = q.find('div', class_="media media--transparent media--hover-effect")
-            kép = kép.img
-            kép = kép['src']
-            Shoe.objects.get_or_create(
-                            name = név,
-                            price = ár,
-                            image = kép,
-                            rendszerezes = rendezes,
-                            cég = "Rdrop",
-                            link = href,
-                        )
+    #         kép = q.find('div', class_="media media--transparent media--hover-effect")
+    #         kép = kép.img
+    #         kép = kép['src']
+    #         Shoe.objects.get_or_create(
+    #                         name = név,
+    #                         price = ár,
+    #                         image = kép,
+    #                         rendszerezes = rendezes,
+    #                         cég = "Rdrop",
+    #                         link = href,
+    #                     )
 
     # service = Service(executable_path="chromedriver.exe")
     # driver = webdriver.Chrome(service=service)

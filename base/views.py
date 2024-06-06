@@ -609,6 +609,8 @@ def sneakerek(request):
             shoes = list(shoes)
             random.shuffle(shoes)
         shoes = list(shoes)
+        if len(shoes) > 20:
+            shoes = shoes[:20]
         márkák = Márka.objects.all()
 
         context = {'shoes': shoes, 'márkák':márkák, 'best_shoes':best_shoes}

@@ -526,6 +526,7 @@ def home(request):
         length = '2'
     
     else:
+        q = q.replace("'", "")
         if "Campus" in q:
             q = q.split(" ")
             q = f"{q[-3]} {q[-2]} {q[-1]}"

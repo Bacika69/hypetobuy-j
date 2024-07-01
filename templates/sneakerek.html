@@ -32,14 +32,15 @@
         margin-top: 10px;
         margin-left: 10px;
         width: 300px;
-        height: 320px;
+        height: 330px;
         padding: 20px;
         margin-right: 10px;
         border: 1px solid transparent;
+        border-radius: 8%;
         transition: border-color 0.1s;
     }
     .shoe_info:hover {
-        border-color: black;
+        border-color: gray;
     
     }
     .sizeer {
@@ -72,12 +73,29 @@
             height: auto;
             width: 15%;
             z-index: 800;
-            background-color: white;
+            background-color: rgb(3, 71, 53);
             padding: 20px;
             display: none;
             border: 1px solid #ddd;
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 8px 12px 12px rgba(33, 32, 32, 0.1);
 
+            border-radius: 30px;
+    }
+    #szin {
+            transition: ease;
+            position: absolute;
+            left:82%;
+            top: 24%;
+            bottom: auto;
+            height: auto;
+            width: auto;
+            z-index: 899;
+            background-color: rgb(3, 71, 53);
+            padding: 20px;
+            display: none;
+            border: 1px solid #ddd;
+            box-shadow: 8px 12px 12px rgba(33, 32, 32, 0.1);
+            grid-template-columns: repeat(2, 1fr);
             border-radius: 30px;
     }
     .rendezesstilo {
@@ -106,38 +124,126 @@
         font-family: helvetica;
         cursor: pointer;
         text-decoration: none;
-        transition: text-decoration 0.3s;
-        color: black;
+        color: white;
+        display: flex;
+    }
+    .h2::after {
+            content: '';
+            margin-top: 2%;
+            position: absolute;
+            margin-left: 80%;
+            margin-right: 12%;
+            width: 0;
+            height: 2px;
+            left: 0;
+            background-color: black;
+            visibility: hidden;
+            transition: all 0.2s ease-in-out;
+        }
+    .h2:hover::after {
+        visibility: visible;
+        width: 9%;
     }
     .rendezesstilo:hover .kör{
         background-color: rgb(177, 176, 176);
     }
-    .rendezesstilo:hover .h2{
-        text-decoration: underline;
-    }
     
-    .h2:hover {
-        text-decoration: underline;
+
+    .szinek{
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0px;
     }
-    
+    .notfound{
+        margin-left: 27%;
+        margin-top: 10%;
+        border-color: rgb(0,106,78);
+        border-width: 5px;
+        margin-bottom: 22%;
+    }
+    .talalat{
+        color: rgb(3, 71, 53);
+        font-size: 350%;
+        font-family: Arial;
+        margin-left: 10%;
+    }
+    .h3 {
+        font-family: helvetica;
+        cursor: pointer;
+        text-decoration: none;
+        color: white;
+        display: flex;
+    }
+    .h3::after {
+            content: '';
+            margin-top: 15%;
+            position: absolute;
+            margin-left: 7%;
+            margin-right: 5%;
+            width: 0;
+            height: 2px;
+            left: 0;
+            background-color: white;
+            visibility: hidden;
+            transition: all 0.2s ease-in-out;
+        }
+    .h3:hover::after {
+        visibility: visible;
+        width: 75%;
+    }
+
+
 </style>
-<div class="rendezesstilo" >
-    <h2 class="h2" onclick="openrendezes()">Rendezes</h2>
+{% if not shoes %}
+<div class="notfound">
+    <h1 class="talalat">NINCS TALÁLAT</h1>
+    <h2 style="margin-left: 8%;">Ellenőrízd a szöveget vagy probálj más keresést.</h2>
+</div>
+
+{% else %}
+<div class="rendezesstilo">
+    <h2 class="h2" style="color: black;" onclick="openrendezes()">Rendezes</h2>
     <button class="kör" onclick="openrendezes()">
         <svg width="15" height="15" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
     </button>
 </div>
+{% endif %}
+
 <div id="rendezes">
     <div>
-        <a method="GET" href="{% url 'sneakerek' %}?q={{ request.GET.q }}&r=legalacsonyabb" class="h2"><h3  style="color: black;">Legalacsonyabb ár</h3></a>
+        <a method="GET" href="{% url 'sneakerek' %}?q={{ request.GET.q }}&r=legalacsonyabb" class="h3"><h3  >Legalacsonyabb ár</h3></a>
     </div>
     <div>
-        <a method="GET" href="{% url 'sneakerek' %}?q={{ request.GET.q }}&r=legmagasabb" class="h2"><h3  style="color: black;">Legmagasabb ár</h2></a>
+        <a method="GET" href="{% url 'sneakerek' %}?q={{ request.GET.q }}&r=legmagasabb" class="h3"><h3  >Legmagasabb ár</h3></a>
+    </div>
+    
+    <div>
+        <a  onclick="openszin()" class="h3"><h3 >Szín Szerint</h3></a>
     </div>
     <div>
-        <a method="GET" href="{% url 'sneakerek' %}?q={{ request.GET.q }}&r=random" class="h2"><h3 style="color: black;">Random</h3></a>
+        <a method="GET" href="{% url 'sneakerek' %}?q={{ request.GET.q }}&r=Leárazás" class="h3"><h3 >Leárazás</h3></a>
+    </div>
+    <div>
+        <a method="GET" href="{% url 'sneakerek' %}?q={{ request.GET.q }}&r=random" class="h3"><h3 >Random</h3></a>
+    </div>
+</div>
+<div id="szin">
+    <div style="margin-left: 30%;">
+        <button class="x_design" onclick="closeszin('{{ csoport }}')">
+            <svg class="X" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="15" y1="6" x2="9" y2="12"></line>
+                <line x1="9" y1="12" x2="15" y2="18"></line>
+            </svg>
+        </button>
+    </div>
+    <div class="szinek">
+        {% for szin in szinek %}
+            <div> 
+                <a method="GET" href="{% url 'sneakerek' %}?q={{ request.GET.q }}&r={{szin}}" style="text-decoration: none; color: white; font-family: Helvetica;"><h3>{{szin}}</h3></a>
+            </div>
+        {% endfor %}
     </div>
 </div>
 <div class="home-container">
@@ -159,10 +265,15 @@
             {% endif %}
             <div class="text_style">
                 <h3>{{ cipő.name }}</h3>
-                <h3 style="color: gray;">{{ cipő.price }} Ft-tól</h3>
-                <h3>{{ cipő.cég }}</h3>
-
-            </div>
+                <h3 style="color: gray;">
+                    {% if cipő.akcios_ár != "0" %}
+                    <span style="text-decoration: line-through;">{{cipő.akcios_ár}} Ft </span> 
+                    &nbsp;&nbsp;&nbsp;
+                    {% endif %}
+                    {{cipő.price }} Ft-tól
+                </h3>
+                <h2 class="no-link-style" style="color: rgb(3, 71, 53);">{{ cipő.cég }}</h2>
+            </div>  
         </a>
     </div>
     {% endfor %}
@@ -176,6 +287,14 @@
         } else {
             rendezes.style.display = "block";
         }
+    }
+    function openszin() {
+        document.getElementById("szin").style.display = "block";
+        document.getElementById("rendezes").style.display = "none";
+    }
+    function closeszin() {
+        document.getElementById("szin").style.display = "none";
+        document.getElementById("rendezes").style.display = "block";
     }
 </script>
 {% endblock %}

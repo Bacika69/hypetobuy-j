@@ -10,7 +10,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
-import datetime
+import  urllib.parse
 import random
 
 def home(request):
@@ -27,47 +27,62 @@ def home(request):
             name = shoe
             )
             
+    
+
     base_url_1 = "https://www.truetosole.hu/collections/sneaker?page={}&grid_list=grid-view"
     result = requests.get(base_url_1).text
     doc = BeautifulSoup(result, "html.parser")
     nav = doc.select_one("nav.pagination--container")
     szamolas = 0
     szam = int(nav.select("li")[-2].select_one("a").string)
+    joar = []
     with requests.Session() as s:
-        for b in range(1, 1): 
-            url = base_url_1.format(b)
-            result_ = s.get(url).text
-            doc_ = BeautifulSoup(result_, "html.parser")
-            ul_ = doc_.select_one("ul.productgrid--items.products-per-row-4")
-            if ul_ is None:  
-                break
-            li_ = ul_.find_all("li")  
-            for i in li_:
-                img = i.select_one("img.productitem--image-primary")
-                src = img['src']
-                név = i.find('h2', class_="productitem--title")
-                név = név.a
-                név = név.text.strip
-                asd = i.select_one("div.price__current")
-                árak  = asd.find("span", class_="mw-price")
-                ár = árak.string
-                ár = ár.replace("FT", "")
-                link = i.find('a', attrs={'data-product-page-link': True}) 
-                link = link["href"]
-                link = f"https://www.truetosole.hu{link}"
-                rendezes = re.sub(r'[^\d\s]', '', ár)
-                rendezes = rendezes.replace(" ", "")
-                rendezes = int(rendezes)
-                
-                Shoe.objects.get_or_create(
-                    name = név,
-                    price = ár,
-                    image = src,
-                    rendszerezes = rendezes,
-                    cég = "TrueToSole",
-                    link = link
-                )
-                szamolas += 1
+            for b in range(1, 1): 
+                url = base_url_1.format(b)
+                result_ = s.get(url).text
+                doc_ = BeautifulSoup(result_, "html.parser")
+                ul_ = doc_.select_one("ul.productgrid--items.products-per-row-4")
+                if ul_ is None:  
+                    break
+                li_ = ul_.find_all("li")  
+                for i in li_:
+                    img = i.select_one("img.productitem--image-primary")
+                    src = img['src']
+                    név = i.find('h2', class_="productitem--title")
+                    név = név.a
+                    név = név.text.strip()
+                    asd = i.select_one("div.price__current")
+                    try:
+                        asd2 = i.find("span", class_="money price__compare-at--min")
+                        akcios = asd2.find("span", class_="mw-price")
+                        akcios = akcios.string
+                        akcios = akcios.replace("FT", "")
+
+                    except:
+                        pass
+                    árak  = asd.find("span", class_="mw-price")
+                    ár = árak.string
+                    ár = ár.replace("FT", "")
+                    if akcios <= ár:
+                        akcios = 0
+                    link = i.find('a', attrs={'data-product-page-link': True}) 
+                    link = link["href"]
+                    link = f"https://www.truetosole.hu{link}"
+                    rendezes = re.sub(r'[^\d\s]', '', ár)
+                    rendezes = rendezes.replace(" ", "")
+                    rendezes = int(rendezes)
+                    
+                    
+                    Shoe.objects.get_or_create(
+                        name = név,
+                        price = ár,
+                        image = src,
+                        rendszerezes = rendezes,
+                        cég = "TrueToSole",
+                        link = link,
+                        akcios_ár = akcios
+                    )
+                    szamolas += 1
 
     base_url = "https://balazskicks.com/collections/sneakerek?page={}"
 
@@ -82,11 +97,22 @@ def home(request):
         fotok = []
         árak = []
         linkek = []
+        akcios = []
         for cucc in divs:
             név = cucc.find('span', class_='product-card__title')
             név = név.a
             név = név.string
-            ár = cucc.find('span', class_='tlab-currency-format')
+            ár = cucc.find_all('span', class_='tlab-currency-format')
+            try:
+                akcios_ár = ár[1]
+                akcios_ár = akcios_ár.string
+                akcios_ár = akcios_ár.split('.')
+                akcios_ár = akcios_ár[0].replace(",", " ")
+                akcios.append(akcios_ár)
+            except:
+                 akcios_ár = 0
+                 akcios.append(akcios_ár)
+            ár = ár[0]
             ár = ár.string
             ár = ár.split('.')
             ár = ár[0].replace(",", " ")
@@ -101,7 +127,7 @@ def home(request):
             link = a['href']
             fotok.append(src)
             linkek.append(link)
-        cipők = list(zip(nevek, árak, fotok, linkek))
+        cipők = list(zip(nevek, árak, fotok, linkek, akcios))
         for cipő_dolgok in cipők:
             rendezes = cipő_dolgok[1]
             rendezes = rendezes.replace(" ", "")
@@ -114,13 +140,15 @@ def home(request):
                         rendszerezes = rendezes,
                         cég = "balázskicks",
                         link = jo_link,
+                        akcios_ár = cipő_dolgok[4]
                     )
     márka_sneak = ['nike', 'air-jordan', 'adidas', 'new-balance-1']
     nevek = []
     fotok = []
     linkek = []
     árak = []
-    for w in márkák:
+    akciosok = []
+    for w in márka_sneak:
         for y in range(1, 1):
             url = f"https://sneakcenter.com/collections/{w}?page={y}"
             result = requests.get(url).text
@@ -129,11 +157,17 @@ def home(request):
             if árak_span is None:
                 break
             for i in árak_span:
-                ár = i.find_all('span', class_='transcy-money')
-                if len(ár) == 2:
-                    ár = ár[1]
+                ár_ = i.find_all('span', class_='transcy-money')
+                if len(ár_) == 2:
+                    ár = ár_[1]
+                    akcios = ár_[0]
+                    akcios = akcios.string
+                    akcios = akcios.split('.')[0].replace(",", " ")
+                    akciosok.append(akcios)
                 else:
-                    ár = ár[0]
+                    ár = ár_[0]
+                    akcios = 0
+                    akciosok.append(akcios)
                 ár = ár.string
                 ár = ár.split('.')[0].replace(",", " ")
                 árak.append(ár)
@@ -153,7 +187,7 @@ def home(request):
                     fotok.append(src)
                     linkek.append(link)
 
-    cipők = list(zip(nevek, árak, fotok, linkek))  
+    cipők = list(zip(nevek, árak, fotok, linkek, akciosok))  
     for cipő_dolgok in cipők:
         rendezes = cipő_dolgok[1].replace(" ", "")
         Shoe.objects.get_or_create(
@@ -163,13 +197,14 @@ def home(request):
                             rendszerezes = rendezes,
                             cég = "sneakercenter",
                             link = cipő_dolgok[3],
+                            akcios_ár = cipő_dolgok[4]
                         )
     base_url_2 = "https://onsize.eu/collections/sneakerek?page={}"
 
     nevek = []
     árak = []
     fotók = []
-    fotók_2 = []
+    akciosok = []
     linkek = []
 
     for i in range(1, 1):
@@ -193,6 +228,18 @@ def home(request):
             ár = int(ár)
             ár = '{:,}'.format(ár)
             ár = ár.replace(",", " ")
+            try:
+                akciosár = product.find('compare-at-price')
+                akciosár = akciosár.find_all('span')
+                akciosár = akciosár[1]
+                akciosár = akciosár.string
+                akciosár = akciosár.replace("Ft", "")
+                akciosár = akciosár.replace(" ", "")
+                akciosár = int(akciosár)
+                akciosár = '{:,}'.format(akciosár)
+                akciosár = akciosár.replace(",", " ")
+            except:
+                  akciosár = 0
             kép = product.find('div', class_="product-card__figure")
             kép = kép.a
             link = kép['href']
@@ -209,18 +256,18 @@ def home(request):
                     linkek.append(link)
                     árak.append(ár)
                     nevek.append(név)
-                    fotók_2.append(kép_2)
-    cipők = list(zip(nevek, árak, fotók, fotók_2, linkek))
+                    akciosok.append(akciosár)
+    cipők = list(zip(nevek, árak, fotók, linkek, akciosok))
     for cipő_dolgok in cipők:
         rendezes = cipő_dolgok[1].replace(" ", "")
         Shoe.objects.get_or_create(
                             name = cipő_dolgok[0],
                             price = cipő_dolgok[1],
                             image = cipő_dolgok[2],
-                            image_2 = cipő_dolgok[3],
                             rendszerezes = rendezes,
                             cég = "OnSize",
-                            link = cipő_dolgok[4],
+                            link = cipő_dolgok[3],
+                            akcios_ár = cipő_dolgok[4]
                         )
     
     base_url_3 = "https://www.rdrop.hu/collections/all?page={}"
@@ -256,6 +303,19 @@ def home(request):
             ár = '{:,}'.format(ár)
             ár = ár.replace(",", " ")
             rendezes = ár.replace(" ", "")
+            try:
+                akciosár = q.find('s', class_="price-item price-item--regular")
+                akciosár = akciosár.string
+                akciosár = akciosár.split('Ft')
+                akciosár = akciosár[0]
+                akciosár = akciosár.replace('.', ' ')
+                akciosár = akciosár.replace(' ', '')
+                akciosár = int(akciosár)
+                akciosár = '{:,}'.format(akciosár)
+                akciosár = akciosár.replace(",", " ")
+                
+            except:
+                 akciosár = 0
             
             kép = q.find('div', class_="media media--transparent media--hover-effect")
             kép = kép.img
@@ -267,6 +327,7 @@ def home(request):
                             rendszerezes = rendezes,
                             cég = "Rdrop",
                             link = href,
+                            akcios_ár = akciosár
                         )
 
     # service = Service(executable_path="chromedriver.exe")
@@ -497,28 +558,42 @@ def home(request):
     #     szam = szam + 1
 
     # driver.quit()
-    cipők = {'NIKE DUNK': [], 'AIR JORDAN': [], 'NEW BALANCE 550': [], 'AIR FORCE': [], 'ADIDAS CAMPUS': [], 'ADIDAS YEEZY': []}
-    márkák = Márka.objects.all()
+    # cipők = {'NIKE DUNK': [], 'AIR JORDAN': [], 'NEW BALANCE 550': [], 'AIR FORCE': [], 'ADIDAS CAMPUS': [], 'ADIDAS YEEZY': []}
+    # márkák = Márka.objects.all()
+    # shoes = Shoe.objects.all()
+    # shoes = shoes.exclude(name__icontains="(TD & PS)")
+    # shoes = shoes.exclude(name__icontains="(Infants)")
+    # shoes = list(shoes)
+    # random.shuffle(shoes)
+    # for cipő in shoes:
+    #     cipő_név = cipő.name.lower()
+    #     if 'dunk' in cipő_név:
+    #         cipők['NIKE DUNK'].append(cipő)
+    #     elif 'jordan' in cipő_név:
+    #         cipők['AIR JORDAN'].append(cipő)
+    #     elif '550' in cipő_név:
+    #         cipők['NEW BALANCE 550'].append(cipő)
+    #     elif 'air force' in cipő_név:
+    #         cipők['AIR FORCE'].append(cipő)
+    #     elif 'campus' in cipő_név:
+    #         cipők['ADIDAS CAMPUS'].append(cipő)
+    #     elif 'yeezy' in cipő_név:
+    #         cipők['ADIDAS YEEZY'].append(cipő)
+    cipők = {'SALE': [], 'POPULAR': []}
     shoes = Shoe.objects.all()
     shoes = shoes.exclude(name__icontains="(TD & PS)")
     shoes = shoes.exclude(name__icontains="(Infants)")
+    shoes = shoes.exclude(name__icontains="(TD)")
     shoes = list(shoes)
     random.shuffle(shoes)
     for cipő in shoes:
-        cipő_név = cipő.name.lower()
-        if 'dunk' in cipő_név:
-            cipők['NIKE DUNK'].append(cipő)
-        elif 'jordan' in cipő_név:
-            cipők['AIR JORDAN'].append(cipő)
-        elif '550' in cipő_név:
-            cipők['NEW BALANCE 550'].append(cipő)
-        elif 'air force' in cipő_név:
-            cipők['AIR FORCE'].append(cipő)
-        elif 'campus' in cipő_név:
-            cipők['ADIDAS CAMPUS'].append(cipő)
-        elif 'yeezy' in cipő_név:
-            cipők['ADIDAS YEEZY'].append(cipő)
-    
+        if cipő.akcios_ár != "0":
+            cipők['SALE'].append(cipő)
+    for cipő in shoes:
+        if '00s grey white' in cipő.name.lower() or '00s core black' in cipő.name.lower() or 'low 07 triple white' in cipő.name.lower() or 'military black' in cipő.name.lower() or 'thunder' in cipő.name.lower() or 'panda' in cipő.name.lower():
+            cipők['POPULAR'].append(cipő)
+
+
     q = request.GET.get('q', '')
 
     if q == '':
@@ -526,41 +601,65 @@ def home(request):
         length = '2'
     
     else:
+        print(q)
         q = q.replace("'", "")
-        if "Campus" in q:
+        q = q.replace('"', "")
+        q = q.replace("(W)", "")
+        q = re.sub(r'\([^)]*\)', '', q)
+        q = q.replace("2023", "")
+        q = q.strip()
+        if "Campus"in q or "550" in q or "Samba" in q or "Handball" in q:
             q = q.split(" ")
             q = f"{q[-3]} {q[-2]} {q[-1]}"
-            campus = "1"
+            
+            cipők = Shoe.objects.all()
+            cipők = cipők.filter(name__icontains=q) 
+            print(q)
+
+            
         else:
-            q = q.split(" ")
-            q = f"{q[-2]} {q[-1]}"
-            campus = "2"
-        shoes__ = Shoe.objects.all()
-        shoes__ = shoes__.exclude(name__icontains="(TD & PS)")
-        shoes__ = shoes__.exclude(name__icontains="(Infants)")
-        cipők=[]
-        for shoe_ in shoes__:
-            try:
-                név_filter =  shoe_.name
-                név_filter = név_filter.replace("'", "")
-                név_filter = név_filter.strip()
-                név_filter = név_filter.split(" ")
-                if campus == "1":
-                    név_filter = f"{név_filter[-3]} {név_filter[-2]} {név_filter[-1]}"
-                elif campus == "2":
-                    név_filter = f"{név_filter[-2]} {név_filter[-1]}"    
-                if q.lower() in név_filter.lower():
-                    cipők.append(shoe_)
-            except: pass
+            cipők=[]
+            print(q)
+
+            
+            shoes__ = Shoe.objects.all()
+            shoes__ = shoes__.exclude(name__icontains="(TD & PS)")
+            shoes__ = shoes__.exclude(name__icontains="(Infants)")
+            shoes__ = shoes__.exclude(name__icontains="(TD)")
+            
+            for shoe_ in shoes__:
+                if '&' in shoe_.name:
+                    név_filter = shoe_.name
+                    név_filter = név_filter.split('&')
+                    név_filter = név_filter[0]
+                    if q in név_filter:
+                        cipők.append(shoe_)
+                else:
+                    q = q.split(" ")
+                    q = f"{q[-2]} {q[-1]}"
+                    try:
+                        név_filter =  shoe_.name
+                        név_filter = név_filter.replace("'", "")
+                        név_filter = név_filter.replace('"', "")
+                        név_filter = név_filter.replace("2023", "")
+                        név_filter  = re.sub(r'\([^)]*\)', '', név_filter)
+                        név_filter = név_filter.strip()
+                        név_filter = név_filter.split(" ")
+                        név_filter = f"{név_filter[-2]} {név_filter[-1]}"    
+                        if q.lower() in név_filter.lower():
+                            cipők.append(shoe_)
+                    except: pass
+        cipők = list(cipők)
         random.shuffle(cipők)
         length=len(cipők)
         print(cipők)
     
     
     best_shoes = {'Nike': ["Air Force 1", "Air Max 1", "Dunk High", "Dunk Low"], 'Air Jordan': ["Air Jordan 1 High", "Air Jordan 1 Mid", "Air Jordan 1 Low", "Air Jordan 3", "Air Jordan 4"],
-                    'Adidas': ["Adidas Campus", "Adidas Gazelle", "Adidas Samba"], 'Yeezy': ["Yeezy Boost 350", "Yeezy Slide", "Yeezy Foam"]}
+                    'Adidas': ["Adidas Campus", "Adidas Gazelle", "Adidas Samba"], 'Yeezy': ["Yeezy Boost 350", "Yeezy Slide", "Yeezy Foam"], 'New Balance': ["New Balance 550", "New Balance 2002R", "New Balance 9060"]}
 
-    context = {'shoes': cipők,  'szamolas': szamolas, 'márkák': márkák, 'best_shoes': best_shoes, 'q': q, 'length': length}
+    
+    context = {'shoes': cipők,  'márkák': márkák, 'best_shoes': best_shoes, 'q': q, 'length': length}
 
     return render(request, 'home.html', context)
 
@@ -576,37 +675,51 @@ def sneakerek(request):
         shoes = Shoe.objects.all()
         shoes = shoes.exclude(name__icontains="(TD & PS)")
         shoes = shoes.exclude(name__icontains="(Infants)")
+        shoes = shoes.exclude(name__icontains="(TD)")
         best_shoes = {'Nike': ["Air Force 1", "Air Max 1", "Dunk High", "Dunk Low"], 'Air Jordan': ["Air Jordan 1 High", "Air Jordan 1 Mid", "Air Jordan 1 Low", "Air Jordan 3", "Air Jordan 4"],
-                    'Adidas': ["Adidas Campus", "Adidas Gazelle", "Adidas Samba"], 'Yeezy': ["Yeezy Boost 350", "Yeezy Slide", "Yeezy Foam"]}
+                    'Adidas': ["Adidas Campus", "Adidas Gazelle", "Adidas Samba"], 'Yeezy': ["Yeezy Boost 350", "Yeezy Slide", "Yeezy Foam"], 'New Balance': ["New Balance 550", "New Balance 2002R", "New Balance 9060"]}
 
         query = request.GET.get('q', '') 
         rendezes = request.GET.get('r', '')
-        if query == "NIKE DUNK" :
-            query = 'dunk'
-        elif query == "AIR FORCE":
-            query = 'force'
-        elif query == "ADIDAS CAMPUS":
-            query = 'campus'
-        elif query == 'ADIDAS YEEZY':
-            query = 'yeezy'
-        elif query == 'NEW BALANCE 550':
-            query = '550'
-        elif query == 'AIR JORDAN':
-            query = 'jordan'
-        
+        if query == 'SALE':
+            shoes = shoes.filter(akcios_ár__gt=0)
+        elif query == 'POPULAR':
+            shoes = shoes.filter(name__icontains='00s Grey White') | shoes.filter(name__icontains='00s Core Black') | shoes.filter(name__icontains='Military Black') | shoes.filter(name__icontains='Thunder') | shoes.filter(name__icontains='07 triple white') | shoes.filter(name__icontains='panda')
+
+        else:
+            if query == "NIKE DUNK" :
+                query = 'dunk'
+            elif query == "AIR FORCE":
+                query = 'force'
+            elif query == "ADIDAS CAMPUS":
+                query = 'campus'
+            elif query == 'ADIDAS YEEZY':
+                query = 'yeezy'
+            elif query == 'NEW BALANCE 550':
+                query = '550'
+            elif query == 'AIR JORDAN':
+                query = 'jordan'
+            shoes = shoes.filter(name__icontains=query) | shoes.filter(cég__icontains=query)
+
+        szinek = ['White', 'Black', 'Grey', 'Brown', 'Red', 'Orange', 'Blue', 'Green', 'Pink', 'Yellow']
             
-        shoes = shoes.filter(name__icontains=query) | shoes.filter(cég__icontains=query)
+        
         if rendezes == "legalacsonyabb":
             shoes = shoes.order_by('rendszerezes')
         elif rendezes == "legmagasabb":
             shoes = shoes.order_by('-rendszerezes')
+        elif rendezes in szinek:
+            shoes = shoes.filter(name__icontains=rendezes)
+        elif rendezes == "Leárazás":
+            shoes = shoes.filter(akcios_ár__gt=0)
         else:
             shoes = list(shoes)
             random.shuffle(shoes)
         shoes = list(shoes)
         márkák = Márka.objects.all()
 
-        context = {'shoes': shoes, 'márkák':márkák, 'best_shoes':best_shoes}
+
+        context = {'shoes': shoes, 'márkák':márkák, 'best_shoes':best_shoes, 'szinek': szinek ,'q': query}
 
         return render(request, 'sneakerek.html', context)
 

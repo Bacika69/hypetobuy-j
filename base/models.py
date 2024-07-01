@@ -24,6 +24,7 @@ class Shoe(models.Model):
     image = models.CharField(max_length=200)
     image_2 = models.CharField(max_length=200)
     link = models.CharField(max_length=200, null=True)
+    akcios_ár = models.CharField(max_length=200)
 
 
     def __str__(self):

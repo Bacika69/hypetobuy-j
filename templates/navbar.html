@@ -9,7 +9,7 @@
     }
     .nav-container {
         position: fixed;
-        background-color: rgb(0,106,78);
+        background-color: rgb(3, 71, 53);
         display: grid;
         grid-template-columns: auto auto auto;
         align-items: center;
@@ -17,41 +17,57 @@
         width: 100%;
         top: 0;
         left: 0;
-        /* border-radius: 30px;  */
         z-index: 900;
     }
-
     .nav-container form input[type="text"] {
         width: 100%; 
         padding: 10px; 
         font-size: 16px; 
     }
-
     .no-link-style {
         text-decoration: none;
         color: white;  
         font-family: helvetica;
-        transition: text-decoration;
+        position: relative;
+        cursor: pointer;
     }
-    .no-link-style:hover {
-        text-decoration: underline white;
-    }
+    
     .menu {
             display: flex;
             justify-content: center;
             margin-left: 25%;
             color: #fff;
-            padding: 10px;
             font-family: helvetica;
              
     }
-    .menu-item {
-            cursor: pointer;
+    .alahuzni {
+        cursor: pointer;
+        position: relative;
+        /* display: inline-block; */
+        position: relative;
+        cursor: pointer;
+    }
+    .alahuzni::after {
+            /* margin-bottom:  10%; */
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: white;
+            visibility: hidden;
+            transition: all 0.2s ease-in-out;
+        }
+
+    .alahuzni:hover::after {
+        visibility: visible;
+        width: 100%;
     }
     .x_design {
         border-radius: 100%;
-        border-color: black;
-        background-color: white;
+        border-color: white;
+        background-color: rgb(3, 71, 53);
         height: 50px;
         width: 50px;
         display: grid;
@@ -60,16 +76,17 @@
         z-index: 1001;
         overflow: hidden;
         transition: border-color 0.3s;
+        cursor: pointer;
     }
     .X {
-        color: rgb(0,106,78);
+        color: white;
         transition: color 0.3s;
         size: 50px;
         
     }
     .x_design:hover  .X {
         border-color: black;
-        color: rgb(1, 32, 24);
+        color: grey;
     }
     
     
@@ -91,11 +108,11 @@
             grid-template-columns: 15fr 1fr;
             left:70%;
             top: 15%;
-            bottom: 50%;
-            height: 30%;
+            bottom: 40%;
+            height: 35%;
             width: 20%;
             z-index: 1000;
-            background-color: rgb(0,106,78);
+            background-color: rgb(3, 71, 53);
             padding: 20px;
 
             border-radius: 30px;
@@ -113,24 +130,47 @@
             left:70%;
             top: 15%;
             bottom: auto;
-            height: auto;
+            height: 40%;
             width: 20%;
             z-index: 1000;
-            background-color: rgb(0,106,78);
+            background-color: rgb(3, 71, 53);
             padding: 20px;
             display: none;
+            border-radius: 30px;
+    }
+    .help{
+        transition: ease;
+            position: absolute;
+            display: none;
+            grid-template-columns: 15fr 1fr;
+            left:20%;
+            top: 20%;
+            height: 34%;
+            width: 60%;
+            z-index: 1000;
+            background-color: rgb(3, 71, 53);
+            padding: 20px;
 
             border-radius: 30px;
+            font-family: helvetica;
     }
 </style>
 
 <div class="nav-container">
-    <div style="margin-left: 10%;" onclick="openSearch()" >
-        <svg role="presentation" stroke-width="2" focusable="false" width="50" height="50" class="icon icon-search" viewBox="0 0 22 22">
-            <circle cx="11" cy="10" r="7" fill="none" stroke="white"></circle>
-            <path d="m16 15 3 3" stroke="white" stroke-linecap="round" stroke-linejoin="round"></path>
-        </svg> 
-        
+    <div style="display: flex; gap: 3%; margin-left: 5%;">
+        <div style="cursor: pointer;"  onclick="openHelp()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="60" viewBox="0 0 22 22" fill="none">
+                <path d="M19.0006 9.03002C19.0007 8.10058 18.8158 7.18037 18.4565 6.32317C18.0972 5.46598 17.5709 4.68895 16.9081 4.03734C16.2453 3.38574 15.4594 2.87265 14.5962 2.52801C13.7331 2.18336 12.8099 2.01409 11.8806 2.03002C10.0966 2.08307 8.39798 2.80604 7.12302 4.05504C5.84807 5.30405 5.0903 6.98746 5.00059 8.77001C4.95795 9.9595 5.21931 11.1402 5.75999 12.2006C6.30067 13.2609 7.10281 14.1659 8.09058 14.83C8.36897 15.011 8.59791 15.2584 8.75678 15.5499C8.91565 15.8415 8.99945 16.168 9.00059 16.5V18.03H15.0006V16.5C15.0006 16.1689 15.0829 15.843 15.24 15.5515C15.3971 15.26 15.6241 15.0121 15.9006 14.83C16.8528 14.1911 17.6336 13.328 18.1741 12.3167C18.7147 11.3054 18.9985 10.1767 19.0006 9.03002V9.03002Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M15 21.04C14.1345 21.6891 13.0819 22.04 12 22.04C10.9181 22.04 9.86548 21.6891 9 21.04" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <div  onclick="openSearch()" >
+            <svg role="presentation" stroke-width="2"  cursor="pointer" focusable="false" width="50" height="60" class="icon icon-search" viewBox="0 0 22 22">
+                <circle cx="11" cy="10" r="7" fill="none" stroke="white"></circle>
+                <path d="m16 15 3 3" stroke="white" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg> 
+            
+        </div>
     </div>
     <div id="search" style="display: none;" >
         <form method="GET" action="{% url 'sneakerek' %}">
@@ -139,33 +179,52 @@
     </div>
     <div style="align-items: center; justify-content: center;">
         <a class="no-link-style" href="/">
-            <h1 style=" color: white; margin-left: 40%;">HypeToBuy </h1>
+            <h1 class="alahuzni" style=" color: white; margin-left: 33%; margin-right: 34%;">HypeToBuy </h1>
         </a>   
     </div>
     <div>
         <div class="menu">
-            <div class="menu-item" onclick="openOverlay()"><h2 class="no-link-style" style="color: white;">SNEAKEREK</h2></div>
+            <div class="no-link-style" onclick="openOverlay()"><h2 class="alahuzni" style="color: white;">SNEAKEREK</h2></div>
         </div>
     </div>
 </div>
+<div id="Help" class="help">
+    <div>
+        <h1 style="color: white; font-weight: bold;">Hogyan működik?</h1>
+        <h2 style="color: white; font-family: helvetica;font-size: 1.3em; ">A HypeToBuy, a legnépszerűbb magyar, csak népszerű sneakereket árusító  
 
+            webshopokról tartalmaz cipőket. Ha rákattintasz egy cipőre, akkor 90%-os  
+            
+            pontossággal megtalálja a keresett cipőt, a különböző weboldalakról. 
+            
+            A pontatlanság elkerüléséhez használd a keresőt, és kulcsszó alapján  
+            
+            megtalálhatod a megfelelő termékeket. </h2>
+    </div>
+    <button class="x_design" onclick="closeHelp()">
+        <svg class="X" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+    </button>
+</div>
 <div id="overlay-background" class="overlay-background"></div>
 <div id="overlay" style="display: none;">
     <div id="overlay-content">
             <div class="márka-container">
                 {% for csoport, cipők in best_shoes.items %}
                     <div onclick="openOverlayfilter('{{ csoport }}')" style="cursor: pointer;">
-                        <a class="no-link-style"><h2 style="color:white">{{ csoport }}</h2></a>
+                        <a class="no-link-style"><h2 class="alahuzni" style="color:white;">{{ csoport }}</h2></a>
                     </div>
                     <div id="overlayfilter-{{ csoport }}" class="overlayfilter">
                         <div class="márka-container">
                             <div>
                                 <div>
-                                    <a method="GET" class="no-link-style" href="{% url 'sneakerek' %}?q={{ csoport }}"><h2 style="color:white">{{ csoport }}</h2></a>
+                                    <a method="GET" class="no-link-style" href="{% url 'sneakerek' %}?q={{ csoport }}"><h2 class="alahuzni" style="color:white">{{ csoport }}</h2></a>
                                 </div>
                                 {% for cipő in cipők %}
                                 <div>
-                                    <a method="GET" class="no-link-style" href="{% url 'sneakerek' %}?q={{ cipő }}"><h2 style="color: rgb(246, 232, 208)">{{ cipő }}</h2></a>
+                                    <a method="GET" class="no-link-style" href="{% url 'sneakerek' %}?q={{ cipő }}"><h2 class="alahuzni" style="color: rgb(246, 232, 208)">{{ cipő }}</h2></a>
                                 </div>
                                 {% endfor %}
                             </div>
@@ -217,5 +276,15 @@
 
     function closeOverlayfilter(csoport) {
         document.getElementById('overlayfilter-' + csoport).style.display = 'none';
+    }
+    function openHelp(){
+        document.getElementById("overlay-background").style.display = "block";
+        document.getElementById('Help').style.display = 'grid';
+        
+    }
+
+    function closeHelp(){
+        document.getElementById('Help').style.display = 'none';
+        document.getElementById("overlay-background").style.display = "none";
     }
 </script>

@@ -24,14 +24,17 @@
         display: flex;
         overflow-x: scroll;
         overflow-y: hidden;
-        white-space: nowrap;
+
     }
     .shoe {
-        width: 320px;
-        height: 320px;
+        margin-top: 10px;
+        margin-left: 10px;
+        width: 300px;
+        height: 25%;
         padding: 20px;
-        margin-right: 15px;
-        border: 1px solid transparent;
+        margin-right: 10px;
+        border: 1px solid transparent,;
+        border-radius: 10%;
         transition: border-color 0.1s;
     }
     .shoe:hover {
@@ -40,10 +43,12 @@
     }
     .shoe_room {
         width: 310px;
-        height: 330px;
+        height: 340px;
         padding: 20px;
         margin-right: 10px;
         border: 1px solid transparent;
+        border-radius: 13%;
+        overflow: hidden;
         transition: border-color ;
     }
     .shoe_room:hover {
@@ -53,34 +58,39 @@
     .no-link-style {
         text-decoration: none;
         color: black;
+        overflow: hidden;
         transition: text-decoraion 0.1s;
         
     }
     
     .no-link-style_csoport {
         text-decoration: none;
-        font-family: Helvetica;
-        width: fit-content;
+        font-family: times;
+        font-size:x-large;
+        width: auto;
         height: auto;
         border: 3px solid transparent;
         color: black;
         box-sizing: border-box;
-        transition: text-decoraion 0.5s;
-        display: inline-block;
+        margin-left: 1%;
+        margin-right: 70%;
+        position: relative;
+        cursor: pointer;
+        width: fit-content;
     }
     .shoe_img {
-        width: 330px;
+        width: 320px;
         height: 181px;
         margin-bottom: 10px;
         object-fit: cover;
+        overflow: hidden;
         
     }
     .text_style {
         color: black;
-        overflow-wrap: break-word;
-        white-space: pre-wrap;
-        text-decoration-skip-ink: none;
-        font-family: Helvetica;
+        overflow: hidden;
+        font-family: Arial;
+        
     }
     .Foot_locker {
         transform: scaleX(-1);
@@ -90,15 +100,32 @@
         object-fit: cover;
     }
     .csoport_style {
-        font-family:'Helvetica';
-        margin-left: 30px;
+        font-family:cursive;
+        margin-left: 3%;
         text-decoration: none;
         color: black;
+        display: flex;
+        margin-bottom: 0%;
+        width: fit-content;
         
     }
-    .no-link-style_csoport:hover {
-        /* border-color: black; */
-        text-decoration: underline;
+    .csoport_style::after {
+            content: '';
+            position: absolute;
+            margin-left: 1%;
+            margin-right: 0%;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: black;
+            visibility: hidden;
+            transition: all 0.3s ease-in-out;
+        }
+
+    .csoport_style:hover::after {
+        visibility: visible;
+        /* width: 100%; */
     }
     .sizeer {
         transform: scaleX(-1);
@@ -111,18 +138,14 @@
         object-fit: cover;
         clip-path: inset(130px 0 0 0);
     }
-    .hr {
-        background-color: rgb(0,106,78);
-        height: 2px;
-        border: 2px;
-    }
+
 </style>
 {% if q is None %}
     <div style="margin-top: 7%;">
         {% for csoport, cipők in shoes.items %}
             <div class="shoe-container">
                 <div class="no-link-style_csoport">
-                    <a method="GET"  href="{% url 'sneakerek'%}?q={{csoport}}" style="text-decoration: none;">
+                    <a method="GET"  href="{% url 'sneakerek'%}?q={{csoport}}" style="text-decoration: none">
                         <h1 class="csoport_style" >{{ csoport }}</h1>
                     </a> 
                 </div>
@@ -138,22 +161,26 @@
                                     <img class="shoe_img" src="{{ cipő.image }}">
                                 {% endif %}
                                 <div class="text_style">
-                                    <h3>{{ cipő.name }}</h3>
-                                    <!-- <h3>{{ cipő.cég }}</h3> -->
-                                </div>
+                                        <h3>{{ cipő.name }}</h3>
+                                        <h3 style="color: gray;">
+                                            {% if cipő.akcios_ár != "0" %}
+                                            <span style="text-decoration: line-through;">{{cipő.akcios_ár}} Ft </span> 
+                                            &nbsp;&nbsp;&nbsp;
+                                            {% endif %}
+                                             {{cipő.price }} Ft-tól
+                                        </h3>
+                                        <h2 class="no-link-style" style="color: rgb(3, 71, 53);">{{ cipő.cég }}</h2>
+                                </div>                                
                             </a>
                         </div>
                     {% endfor %}
                 </div>
             </div>
-            <div class="hr">
-                <hr class="hr">
-            </div>
             
         {% endfor %}
     </div>
 {% elif not shoes %}
-    <h1>Nincs találat</h1>
+    <h1 style="margin-top: 15%; color: black;">Nincs találat</h1>
 {% else %}   
 
             {% if length == 1 %}
@@ -191,8 +218,6 @@
                     </div>
                 {% endfor %}
                 </div>
-            {% endif %}
-
+            {% endif %} 
 {% endif %}
-
 {% endblock content %}
